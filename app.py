@@ -14,7 +14,9 @@ SHEET_ID = "1DlGk2a1Olk7hlOwntiKNOc3W9xlQDCKtz7khS7j0dX0"
 def leer_hoja(nombre_hoja):
     nombre_url = nombre_hoja.replace(" ", "%20")
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={nombre_url}"
-    return pd.read_csv(url)
+    df = pd.read_csv(url)
+    df.columns = df.columns.astype(str).str.strip()
+    return df
 
 MAPA_PAISES = {
     "PANAMA": "PAN", "GUATEMALA": "GTM", "COLOMBIA": "COL", "PERU": "PER",
@@ -52,15 +54,19 @@ def cargar_todo():
     except Exception:
         df_vsba_vtex = pd.DataFrame()
 
+    cols_sla = ["Evento", "Marca", "Inicio", "Fin", "País", "Promesa_Dias", "Comentario"]
+    df_slas_default = pd.DataFrame(SLAS_DEFAULT, columns=cols_sla)
+
     try:
         df_slas = leer_hoja("EVENTOS_SLAS")
+        if df_slas.empty or not set(["Evento", "Marca", "Inicio", "Fin", "País"]).issubset(df_slas.columns):
+            df_slas = df_slas_default
     except Exception:
-        cols = ["Evento", "Marca", "Inicio", "Fin", "País", "Promesa_Dias", "Comentario"]
-        df_slas = pd.DataFrame(SLAS_DEFAULT, columns=cols)
+        df_slas = df_slas_default
 
     try:
         df_ctrl = leer_hoja("CONTROL_UPDATE")
-        last_upd = str(df_ctrl.iloc[0, 0])
+        last_upd = str(df_ctrl.iloc[0, 0]) if not df_ctrl.empty else datetime.now().strftime("%d/%m/%Y %I:%M %p")
     except Exception:
         last_upd = datetime.now().strftime("%d/%m/%Y %I:%M %p")
 
@@ -94,10 +100,10 @@ with f1:
 
 with f2:
     if marca_sel == "Consolidado (Ambas Marcas)":
-        eventos_disp = df_slas["Evento"].unique().tolist()
+        eventos_disp = df_slas["Evento"].dropna().unique().tolist()
     else:
-        ev_marca = df_slas[df_slas["Marca"] == marca_sel]["Evento"].unique().tolist()
-        eventos_disp = ev_marca if len(ev_marca) > 0 else df_slas["Evento"].unique().tolist()
+        ev_marca = df_slas[df_slas["Marca"] == marca_sel]["Evento"].dropna().unique().tolist()
+        eventos_disp = ev_marca if len(ev_marca) > 0 else df_slas["Evento"].dropna().unique().tolist()
     evento_sel = st.selectbox("2️⃣ Evento 2026:", eventos_disp)
 
 cfg_evt = df_slas[df_slas["Evento"] == evento_sel].copy()
@@ -114,7 +120,7 @@ st.caption(f"📅 **Ventana del Evento:** `{f_ini.strftime('%Y-%m-%d')}` al `{f_
 # 4. PROCESAMIENTO Y CRUCE OPERATIVO
 # ==========================================
 def preparar_vtex(df):
-    if df.empty:
+    if df.empty or "CreationDate" not in df.columns:
         return pd.DataFrame(columns=["País", "Orders", "QTY", "Sales_USD"])
     d = df.copy()
     d["Fecha"] = pd.to_datetime(d["CreationDate"], errors="coerce").dt.normalize()
@@ -128,7 +134,7 @@ def preparar_vtex(df):
     ).rename(columns={"Country": "País"})
 
 def preparar_icg_bbw(df):
-    if df.empty:
+    if df.empty or "Fecha" not in df.columns:
         return pd.DataFrame(columns=["País", "Order_ICG", "Sales_ICG"])
     d = df.copy()
     d["Fecha"] = pd.to_datetime(d["Fecha"], errors="coerce").dt.normalize()
@@ -141,7 +147,7 @@ def preparar_icg_bbw(df):
     )
 
 def preparar_icg_vsba(df):
-    if df.empty:
+    if df.empty or "DATE" not in df.columns:
         return pd.DataFrame(columns=["País", "Order_ICG", "Sales_ICG"])
     d = df.copy()
     d["Fecha"] = pd.to_datetime(d["DATE"], errors="coerce").dt.normalize()
@@ -166,7 +172,7 @@ else:
 df_calc = pd.merge(vtex_res, icg_res, on="País", how="outer").fillna(0)
 slas_pais = cfg_evt[["País", "Promesa_Dias", "Comentario"]].drop_duplicates(subset=["País"])
 df_calc = pd.merge(df_calc, slas_pais, on="País", how="left")
-df_calc["Promesa_Dias"] = df_calc["Promesa_Dias"].fillna(7)
+df_calc["Promesa_Dias"] = pd.to_numeric(df_calc["Promesa_Dias"], errors="coerce").fillna(7)
 df_calc["Comentario"] = df_calc["Comentario"].fillna("")
 
 df_calc["% Share"] = np.where(df_calc["Sales_USD"].sum() > 0, (df_calc["Sales_USD"] / df_calc["Sales_USD"].sum()) * 100, 0)
