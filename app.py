@@ -19,233 +19,222 @@ st.set_page_config(
 # ==========================================
 # 2. ESTILO CORPORATIVO CLEAN (BATH & BODY WORKS)
 # ==========================================
-st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+st.markdown("""<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        color: #1E293B;
-    }
+html, body, [class*="css"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1E293B;
+}
 
-    .stApp {
-        background-color: #FFFFFF;
-    }
+.stApp {
+    background-color: #FFFFFF;
+}
 
-    /* Reducir márgenes superiores innecesarios de Streamlit */
-    .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 2.5rem !important;
-        max-width: 1440px;
-    }
+.block-container {
+    padding-top: 3.2rem !important;
+    padding-bottom: 2.5rem !important;
+    max-width: 1440px;
+}
 
-    /* Encabezado ejecutivo */
-    .bbw-brand-tag {
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        color: #005696;
-        text-transform: uppercase;
-        margin-bottom: 0.2rem;
-    }
+.bbw-brand-tag {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #005696;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
 
-    .bbw-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #1B365D;
-        letter-spacing: -0.02em;
-        margin: 0;
-        line-height: 1.2;
-    }
+.bbw-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1B365D;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.2;
+}
 
-    .bbw-meta {
-        font-size: 0.85rem;
-        color: #64748B;
-        margin-top: 0.45rem;
-    }
+.bbw-meta {
+    font-size: 0.85rem;
+    color: #64748B;
+    margin-top: 0.45rem;
+}
 
-    /* Botón minimalista */
-    div.stButton > button {
-        background-color: #FFFFFF;
-        color: #1B365D;
-        border: 1px solid #CBD5E1;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        padding: 0.45rem 1rem;
-        transition: all 0.15s ease;
-    }
-    div.stButton > button:hover {
-        background-color: #F0F6FC;
-        border-color: #005696;
-        color: #005696;
-    }
+div.stButton > button {
+    background-color: #FFFFFF;
+    color: #1B365D;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.45rem 1rem;
+    transition: all 0.15s ease;
+}
+div.stButton > button:hover {
+    background-color: #F0F6FC;
+    border-color: #005696;
+    color: #005696;
+}
 
-    /* Selectboxes limpios */
-    div[data-baseweb="select"] > div {
-        background-color: #F8FAFC;
-        border: 1px solid #CBD5E1;
-        border-radius: 6px;
-        font-size: 0.9rem;
-    }
+div[data-baseweb="select"] > div {
+    background-color: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
 
-    /* Tarjetas KPI clean */
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin: 1.25rem 0 1.75rem 0;
-    }
-    .kpi-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        padding: 1.1rem 1.25rem;
-    }
-    .kpi-card.accent {
-        background-color: #F0F6FC;
-        border-color: #BFD9F2;
-    }
-    .kpi-label {
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748B;
-        margin-bottom: 0.35rem;
-    }
-    .kpi-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #1B365D;
-        line-height: 1.15;
-    }
-    .kpi-sub {
-        font-size: 0.78rem;
-        color: #64748B;
-        margin-top: 0.3rem;
-    }
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 1.1rem 0 1.75rem 0;
+}
+.kpi-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+}
+.kpi-card.accent {
+    background-color: #F0F6FC;
+    border-color: #BFD9F2;
+}
+.kpi-label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748B;
+    margin-bottom: 0.35rem;
+}
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1B365D;
+    line-height: 1.15;
+}
+.kpi-sub {
+    font-size: 0.78rem;
+    color: #64748B;
+    margin-top: 0.3rem;
+}
 
-    /* Tabla operativa personalizada Bath & Body Works */
-    .section-header {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #1B365D;
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.4rem;
-        border-bottom: 1px solid #E2E8F0;
-    }
+.section-header {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1B365D;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #E2E8F0;
+}
 
-    .table-wrapper {
-        width: 100%;
-        overflow-x: auto;
-        border: 1px solid #CBD5E1;
-        border-radius: 8px;
-    }
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+}
 
-    table.bbw-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.84rem;
-        background-color: #FFFFFF;
-    }
+table.bbw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    background-color: #FFFFFF;
+}
 
-    table.bbw-table thead th {
-        background-color: #1B365D;
-        color: #FFFFFF;
-        font-weight: 600;
-        font-size: 0.75rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        padding: 0.75rem 0.65rem;
-        text-align: right;
-        border-bottom: 2px solid #0F2342;
-        white-space: nowrap;
-    }
+table.bbw-table thead th {
+    background-color: #1B365D;
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.75rem 0.65rem;
+    text-align: right;
+    border-bottom: 2px solid #0F2342;
+    white-space: nowrap;
+}
 
-    table.bbw-table thead th.col-left {
-        text-align: left;
-    }
+table.bbw-table thead th.col-left {
+    text-align: left;
+}
 
-    table.bbw-table thead th.th-vtex {
-        background-color: #005696;
-    }
+table.bbw-table thead th.th-vtex {
+    background-color: #005696;
+}
 
-    table.bbw-table thead th.th-icg {
-        background-color: #2B6CB0;
-    }
+table.bbw-table thead th.th-icg {
+    background-color: #2B6CB0;
+}
 
-    table.bbw-table tbody td {
-        padding: 0.65rem 0.65rem;
-        border-bottom: 1px solid #E2E8F0;
-        text-align: right;
-        color: #1E293B;
-        white-space: nowrap;
-    }
+table.bbw-table tbody td {
+    padding: 0.65rem 0.65rem;
+    border-bottom: 1px solid #E2E8F0;
+    text-align: right;
+    color: #1E293B;
+    white-space: nowrap;
+}
 
-    table.bbw-table tbody tr:hover td {
-        background-color: #F8FAFC !important;
-    }
+table.bbw-table tbody tr:hover td {
+    background-color: #F8FAFC !important;
+}
 
-    table.bbw-table tbody td.col-pais {
-        text-align: left;
-        font-weight: 600;
-        color: #1B365D;
-    }
+table.bbw-table tbody td.col-pais {
+    text-align: left;
+    font-weight: 600;
+    color: #1B365D;
+}
 
-    /* Bloques de color suaves inspirados en BBW Gingham */
-    table.bbw-table tbody td.bg-vtex {
-        background-color: #F4F8FC;
-        color: #1B365D;
-        font-weight: 500;
-    }
+table.bbw-table tbody td.bg-vtex {
+    background-color: #F4F8FC;
+    color: #1B365D;
+    font-weight: 500;
+}
 
-    table.bbw-table tbody td.bg-icg {
-        background-color: #EBF3FA;
-        color: #0F2942;
-        font-weight: 500;
-    }
+table.bbw-table tbody td.bg-icg {
+    background-color: #EBF3FA;
+    color: #0F2942;
+    font-weight: 500;
+}
 
-    table.bbw-table tbody td.bg-avance {
-        background-color: #FDF2F5;
-        color: #9B1B48;
-        font-weight: 600;
-    }
+table.bbw-table tbody td.bg-avance {
+    background-color: #FDF2F5;
+    color: #9B1B48;
+    font-weight: 600;
+}
 
-    table.bbw-table tbody td.pend-neg {
-        color: #B91C1C;
-        font-weight: 600;
-    }
+table.bbw-table tbody td.pend-neg {
+    color: #B91C1C;
+    font-weight: 600;
+}
 
-    table.bbw-table tbody td.pend-pos {
-        color: #1B365D;
-        font-weight: 600;
-    }
+table.bbw-table tbody td.pend-pos {
+    color: #1B365D;
+    font-weight: 600;
+}
 
-    table.bbw-table tbody td.col-comentarios {
-        text-align: left;
-        white-space: normal;
-        min-width: 240px;
-        max-width: 340px;
-        color: #475569;
-        font-size: 0.82rem;
-    }
+table.bbw-table tbody td.col-comentarios {
+    text-align: left;
+    white-space: normal;
+    min-width: 240px;
+    max-width: 340px;
+    color: #475569;
+    font-size: 0.82rem;
+}
 
-    /* Fila Total General */
-    table.bbw-table tbody tr.row-total td {
-        background-color: #1B365D !important;
-        color: #FFFFFF !important;
-        font-weight: 700;
-        border-top: 2px solid #0F2342;
-        border-bottom: none;
-        padding: 0.75rem 0.65rem;
-    }
+table.bbw-table tbody tr.row-total td {
+    background-color: #1B365D !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    border-top: 2px solid #0F2342;
+    border-bottom: none;
+    padding: 0.75rem 0.65rem;
+}
 
-    /* Ocultar menú hamburguesa y footer por defecto */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-""", unsafe_allow_html=True)
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>""", unsafe_allow_html=True)
 
 # ==========================================
 # 3. FUNCIONES DE LECTURA Y LIMPIEZA
@@ -341,7 +330,6 @@ def cargar_datos():
     except Exception:
         df_slas = df_slas_def
 
-    # Fecha de actualización limpia (si viene serial numérico de Sheets o vacío, usa hora actual)
     last_upd = datetime.now().strftime("%d/%m/%Y %I:%M %p")
     try:
         df_ctrl = leer_hoja("CONTROL_UPDATE")
@@ -361,15 +349,16 @@ if df_vtex.empty:
     st.stop()
 
 # ==========================================
-# 5. ENCABEZADO Y FILTROS LIMPIOS (SIN EMOJIS)
+# 5. ENCABEZADO Y FILTROS LIMPIOS
 # ==========================================
 col_t, col_b = st.columns([5, 1])
 with col_t:
-    st.markdown(f"""
-        <div class="bbw-brand-tag">{NOMBRE_MARCA}</div>
-        <h1 class="bbw-title">Seguimiento Operativo y Capacidad de Procesamiento</h1>
-        <div class="bbw-meta">Última actualización de datos: <strong>{last_upd}</strong></div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="bbw-brand-tag">{NOMBRE_MARCA}</div>'
+        f'<h1 class="bbw-title">Seguimiento Operativo y Capacidad de Procesamiento</h1>'
+        f'<div class="bbw-meta">Última actualización de datos: <strong>{last_upd}</strong></div>',
+        unsafe_allow_html=True
+    )
 
 with col_b:
     st.write("")
@@ -379,7 +368,7 @@ with col_b:
 
 st.markdown("<hr style='margin: 1rem 0 1.25rem 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
-f1, f2, f_espacio = st.columns([1.2, 1.2, 1.6])
+f1, f2, _ = st.columns([1.2, 1.2, 1.6])
 with f1:
     eventos_disp = df_slas["Evento"].dropna().unique().tolist()
     evento_sel = st.selectbox("Evento", eventos_disp)
@@ -461,40 +450,25 @@ tot_icg_sales = df_vista["Facturado ICG"].sum()
 tot_pend = df_vista["PEDIDOS PENDIENTES"].sum()
 tot_avance = (tot_icg_sales / tot_sales * 100) if tot_sales > 0 else 0.0
 
-st.markdown(f"""
-    <div style="font-size: 0.82rem; color: #64748B; margin-top: 0.25rem;">
-        Ventana del evento: <strong>{f_ini.strftime('%d/%m/%Y')}</strong> al <strong>{f_fin.strftime('%d/%m/%Y')}</strong>
-    </div>
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">Vtex Orders</div>
-            <div class="kpi-value">{tot_ord:,.0f}</div>
-            <div class="kpi-sub">Venta entrante: ${tot_sales:,.2f}</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">ICG Orders</div>
-            <div class="kpi-value">{tot_icg_ord:,.0f}</div>
-            <div class="kpi-sub">Facturado: ${tot_icg_sales:,.2f}</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Pedidos Pendientes</div>
-            <div class="kpi-value">{tot_pend:,.0f}</div>
-            <div class="kpi-sub">Por facturar en ERP</div>
-        </div>
-        <div class="kpi-card accent">
-            <div class="kpi-label">Avance de Facturación</div>
-            <div class="kpi-value">{tot_avance:.0f}%</div>
-            <div class="kpi-sub">Sobre venta total USD</div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+kpi_html = (
+    f'<div style="font-size: 0.82rem; color: #64748B; margin-top: 0.25rem;">'
+    f'Ventana del evento: <strong>{f_ini.strftime("%d/%m/%Y")}</strong> al <strong>{f_fin.strftime("%d/%m/%Y")}</strong>'
+    f'</div>'
+    f'<div class="kpi-grid">'
+    f'<div class="kpi-card"><div class="kpi-label">Vtex Orders</div><div class="kpi-value">{tot_ord:,.0f}</div><div class="kpi-sub">Venta entrante: ${tot_sales:,.2f}</div></div>'
+    f'<div class="kpi-card"><div class="kpi-label">ICG Orders</div><div class="kpi-value">{tot_icg_ord:,.0f}</div><div class="kpi-sub">Facturado: ${tot_icg_sales:,.2f}</div></div>'
+    f'<div class="kpi-card"><div class="kpi-label">Pedidos Pendientes</div><div class="kpi-value">{tot_pend:,.0f}</div><div class="kpi-sub">Por facturar en ERP</div></div>'
+    f'<div class="kpi-card accent"><div class="kpi-label">Avance de Facturación</div><div class="kpi-value">{tot_avance:.0f}%</div><div class="kpi-sub">Sobre venta total USD</div></div>'
+    f'</div>'
+)
+st.markdown(kpi_html, unsafe_allow_html=True)
 
 # ==========================================
-# 8. TABLA HTML CORPORATIVA (CLEAN Y SIN "NONE")
+# 8. TABLA HTML CORPORATIVA (SIN SANGRÍAS)
 # ==========================================
 st.markdown('<div class="section-header">Detalle de Capacidad Operativa por País</div>', unsafe_allow_html=True)
 
-filas_html = []
+filas = []
 for _, r in df_vista.iterrows():
     pend_val = r["PEDIDOS PENDIENTES"]
     if pend_val < 0:
@@ -504,40 +478,60 @@ for _, r in df_vista.iterrows():
         pend_str = f"{pend_val:,.0f}"
         pend_cls = "pend-pos"
 
-    filas_html.append(f"""
-        <tr>
-            <td class="col-pais">{r['País']}</td>
-            <td class="bg-vtex">{r['Vtex Orders']:,.0f}</td>
-            <td class="bg-vtex">${r['Vtex Sales']:,.2f}</td>
-            <td class="bg-icg">{r['ICG Orders']:,.0f}</td>
-            <td class="bg-icg">${r['Facturado ICG']:,.2f}</td>
-            <td class="bg-avance">{r['AVANCE DE FACTURACIÓN']:.0f}%</td>
-            <td class="{pend_cls}">{pend_str}</td>
-            <td>${r['GAP']:,.2f}</td>
-            <td>{r['PROMESA DE ENTREGA']:.0f}</td>
-            <td>{r['META MINIMA']:,.0f}</td>
-            <td>{r['DÍAS HOMBRES']:,.0f}</td>
-            <td class="col-comentarios">{r['COMENTARIOS']}</td>
-        </tr>
-    """)
+    filas.append(
+        f'<tr>'
+        f'<td class="col-pais">{r["País"]}</td>'
+        f'<td class="bg-vtex">{r["Vtex Orders"]:,.0f}</td>'
+        f'<td class="bg-vtex">${r["Vtex Sales"]:,.2f}</td>'
+        f'<td class="bg-icg">{r["ICG Orders"]:,.0f}</td>'
+        f'<td class="bg-icg">${r["Facturado ICG"]:,.2f}</td>'
+        f'<td class="bg-avance">{r["AVANCE DE FACTURACIÓN"]:.0f}%</td>'
+        f'<td class="{pend_cls}">{pend_str}</td>'
+        f'<td>${r["GAP"]:,.2f}</td>'
+        f'<td>{r["PROMESA DE ENTREGA"]:.0f}</td>'
+        f'<td>{r["META MINIMA"]:,.0f}</td>'
+        f'<td>{r["DÍAS HOMBRES"]:,.0f}</td>'
+        f'<td class="col-comentarios">{r["COMENTARIOS"]}</td>'
+        f'</tr>'
+    )
 
-# Fila Total General cuando se muestran todos los países
 if pais_sel == "Todos los países" and len(df_vista) > 1:
     tot_gap = df_vista["GAP"].sum()
     tot_pend_str = f"({abs(tot_pend):,.0f})" if tot_pend < 0 else f"{tot_pend:,.0f}"
-    filas_html.append(f"""
-        <tr class="row-total">
-            <td style="text-align:left;">Total general</td>
-            <td>{tot_ord:,.0f}</td>
-            <td>${tot_sales:,.2f}</td>
-            <td>{tot_icg_ord:,.0f}</td>
-            <td>${tot_icg_sales:,.2f}</td>
-            <td>{tot_avance:.0f}%</td>
-            <td>{tot_pend_str}</td>
-            <td>${tot_gap:,.2f}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    """)
+    filas.append(
+        f'<tr class="row-total">'
+        f'<td style="text-align:left;">Total general</td>'
+        f'<td>{tot_ord:,.0f}</td>'
+        f'<td>${tot_sales:,.2f}</td>'
+        f'<td>{tot_icg_ord:,.0f}</td>'
+        f'<td>${tot_icg_sales:,.2f}</td>'
+        f'<td>{tot_avance:.0f}%</td>'
+        f'<td>{tot_pend_str}</td>'
+        f'<td>${tot_gap:,.2f}</td>'
+        f'<td></td><td></td><td></td><td></td>'
+        f'</tr>'
+    )
+
+tabla_html = (
+    '<div class="table-wrapper">'
+    '<table class="bbw-table">'
+    '<thead><tr>'
+    '<th class="col-left">País</th>'
+    '<th class="th-vtex">Vtex Orders</th>'
+    '<th class="th-vtex">Vtex Sales</th>'
+    '<th class="th-icg">ICG Orders</th>'
+    '<th class="th-icg">Facturado ICG</th>'
+    '<th>Avance de Facturación</th>'
+    '<th>Pedidos Pendientes</th>'
+    '<th>GAP</th>'
+    '<th>Promesa de Entrega</th>'
+    '<th>Meta Mínima</th>'
+    '<th>Días Hombres</th>'
+    '<th class="col-left">Comentarios</th>'
+    '</tr></thead>'
+    f'<tbody>{"".join(filas)}</tbody>'
+    '</table>'
+    '</div>'
+)
+
+st.markdown(tabla_html, unsafe_allow_html=True)
