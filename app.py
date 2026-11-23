@@ -5,32 +5,251 @@ import re
 from datetime import datetime
 
 # ==========================================
-# 1. CONFIGURACIÓN DE LA MARCA Y GOOGLE SHEET
+# 1. CONFIGURACIÓN DE MARCA Y GOOGLE SHEET
 # ==========================================
-NOMBRE_MARCA = "Bath & Body Works"
+NOMBRE_MARCA = "BATH & BODY WORKS"
 SHEET_ID = "1DlGk2a1Olk7hlOwntiKNOc3W9xlQDCKtz7khS7j0dX0"
 
-st.set_page_config(page_title=f"Seguimiento Operativo - {NOMBRE_MARCA}", page_icon="🫧", layout="wide")
+st.set_page_config(
+    page_title=f"Seguimiento Operativo | {NOMBRE_MARCA}",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# Estilo visual inspirado en Bath & Body Works (Azul Gingham + Rosa Suave)
+# ==========================================
+# 2. ESTILO CORPORATIVO CLEAN (BATH & BODY WORKS)
+# ==========================================
 st.markdown("""
     <style>
-    .stApp { background-color: #F8FAFC; }
-    h1 { color: #1B365D !important; font-weight: 800 !important; }
-    h2, h3 { color: #005696 !important; }
-    div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        border: 1px solid #D6E4F0;
-        border-left: 5px solid #005696;
-        padding: 14px 18px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 86, 150, 0.06);
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #1E293B;
     }
-    div[data-testid="stMetricLabel"] { color: #4A5568 !important; font-weight: 600 !important; }
-    div[data-testid="stMetricValue"] { color: #1B365D !important; }
+
+    .stApp {
+        background-color: #FFFFFF;
+    }
+
+    /* Reducir márgenes superiores innecesarios de Streamlit */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2.5rem !important;
+        max-width: 1440px;
+    }
+
+    /* Encabezado ejecutivo */
+    .bbw-brand-tag {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: #005696;
+        text-transform: uppercase;
+        margin-bottom: 0.2rem;
+    }
+
+    .bbw-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1B365D;
+        letter-spacing: -0.02em;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .bbw-meta {
+        font-size: 0.85rem;
+        color: #64748B;
+        margin-top: 0.45rem;
+    }
+
+    /* Botón minimalista */
+    div.stButton > button {
+        background-color: #FFFFFF;
+        color: #1B365D;
+        border: 1px solid #CBD5E1;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.45rem 1rem;
+        transition: all 0.15s ease;
+    }
+    div.stButton > button:hover {
+        background-color: #F0F6FC;
+        border-color: #005696;
+        color: #005696;
+    }
+
+    /* Selectboxes limpios */
+    div[data-baseweb="select"] > div {
+        background-color: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    /* Tarjetas KPI clean */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin: 1.25rem 0 1.75rem 0;
+    }
+    .kpi-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 1.1rem 1.25rem;
+    }
+    .kpi-card.accent {
+        background-color: #F0F6FC;
+        border-color: #BFD9F2;
+    }
+    .kpi-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748B;
+        margin-bottom: 0.35rem;
+    }
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1B365D;
+        line-height: 1.15;
+    }
+    .kpi-sub {
+        font-size: 0.78rem;
+        color: #64748B;
+        margin-top: 0.3rem;
+    }
+
+    /* Tabla operativa personalizada Bath & Body Works */
+    .section-header {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #1B365D;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+    }
+
+    table.bbw-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+        background-color: #FFFFFF;
+    }
+
+    table.bbw-table thead th {
+        background-color: #1B365D;
+        color: #FFFFFF;
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.75rem 0.65rem;
+        text-align: right;
+        border-bottom: 2px solid #0F2342;
+        white-space: nowrap;
+    }
+
+    table.bbw-table thead th.col-left {
+        text-align: left;
+    }
+
+    table.bbw-table thead th.th-vtex {
+        background-color: #005696;
+    }
+
+    table.bbw-table thead th.th-icg {
+        background-color: #2B6CB0;
+    }
+
+    table.bbw-table tbody td {
+        padding: 0.65rem 0.65rem;
+        border-bottom: 1px solid #E2E8F0;
+        text-align: right;
+        color: #1E293B;
+        white-space: nowrap;
+    }
+
+    table.bbw-table tbody tr:hover td {
+        background-color: #F8FAFC !important;
+    }
+
+    table.bbw-table tbody td.col-pais {
+        text-align: left;
+        font-weight: 600;
+        color: #1B365D;
+    }
+
+    /* Bloques de color suaves inspirados en BBW Gingham */
+    table.bbw-table tbody td.bg-vtex {
+        background-color: #F4F8FC;
+        color: #1B365D;
+        font-weight: 500;
+    }
+
+    table.bbw-table tbody td.bg-icg {
+        background-color: #EBF3FA;
+        color: #0F2942;
+        font-weight: 500;
+    }
+
+    table.bbw-table tbody td.bg-avance {
+        background-color: #FDF2F5;
+        color: #9B1B48;
+        font-weight: 600;
+    }
+
+    table.bbw-table tbody td.pend-neg {
+        color: #B91C1C;
+        font-weight: 600;
+    }
+
+    table.bbw-table tbody td.pend-pos {
+        color: #1B365D;
+        font-weight: 600;
+    }
+
+    table.bbw-table tbody td.col-comentarios {
+        text-align: left;
+        white-space: normal;
+        min-width: 240px;
+        max-width: 340px;
+        color: #475569;
+        font-size: 0.82rem;
+    }
+
+    /* Fila Total General */
+    table.bbw-table tbody tr.row-total td {
+        background-color: #1B365D !important;
+        color: #FFFFFF !important;
+        font-weight: 700;
+        border-top: 2px solid #0F2342;
+        border-bottom: none;
+        padding: 0.75rem 0.65rem;
+    }
+
+    /* Ocultar menú hamburguesa y footer por defecto */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
+# ==========================================
+# 3. FUNCIONES DE LECTURA Y LIMPIEZA
+# ==========================================
 def leer_hoja(nombre_hoja, col_clave=None):
     nombre_url = nombre_hoja.replace(" ", "%20")
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={nombre_url}"
@@ -50,16 +269,14 @@ def limpiar_numero(serie):
         if pd.isna(v):
             return 0.0
         s = re.sub(r"[\$\s]", "", str(v)).strip()
-        if not s or s.lower() in ["nan", "none", "#num!", "#div/0!", "-"]:
+        if not s or s.lower() in ["nan", "none", "#num!", "#div/0!", "#value!", "#n/a", "-"]:
             return 0.0
-        # Si tiene coma y punto (ej. 1.234,56 o 1,234.56)
         if "," in s and "." in s:
             if s.rfind(",") > s.rfind("."):
                 s = s.replace(".", "").replace(",", ".")
             else:
                 s = s.replace(",", "")
         elif "," in s:
-            # Si hay una sola coma con 1 o 2 decimales al final (ej. 79844,43) -> decimal
             partes = s.split(",")
             if len(partes) == 2 and len(partes[1]) <= 2:
                 s = s.replace(",", ".")
@@ -78,19 +295,19 @@ MAPA_PAISES = {
 }
 
 SLAS_DEFAULT = [
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "PAN", 6, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "GTM", 7, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "COL", 7, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "PER", 7, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "CRI", 7, "Problemas con la pasarela"),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "PRY", 5, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "ECU", 7, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "ARG", 8, ""),
-    ("Mist Event Ago 2026", "2026-08-26", "2026-08-30", "SLV", 7, "Problemas con el pago"),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "PAN", 6, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "GTM", 7, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "COL", 7, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "PER", 7, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "CRI", 7, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "PRY", 5, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "ECU", 7, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "ARG", 8, ""),
+    ("Black Friday 2026", "2026-11-22", "2026-11-29", "SLV", 7, ""),
 ]
 
 # ==========================================
-# 2. CARGA DE DATOS
+# 4. CARGA DE DATOS
 # ==========================================
 @st.cache_data(ttl=60)
 def cargar_datos():
@@ -124,46 +341,55 @@ def cargar_datos():
     except Exception:
         df_slas = df_slas_def
 
+    # Fecha de actualización limpia (si viene serial numérico de Sheets o vacío, usa hora actual)
+    last_upd = datetime.now().strftime("%d/%m/%Y %I:%M %p")
     try:
         df_ctrl = leer_hoja("CONTROL_UPDATE")
-        last_upd = str(df_ctrl.iloc[0, 0]) if not df_ctrl.empty else datetime.now().strftime("%d/%m/%Y %I:%M %p")
+        if not df_ctrl.empty:
+            val_ctrl = str(df_ctrl.iloc[0, 0]).strip()
+            if "/" in val_ctrl or "-" in val_ctrl:
+                last_upd = val_ctrl
     except Exception:
-        last_upd = datetime.now().strftime("%d/%m/%Y %I:%M %p")
+        pass
 
     return df_vtex, df_icg, df_slas, last_upd
 
 df_vtex, df_icg, df_slas, last_upd = cargar_datos()
 
 if df_vtex.empty:
-    st.error("⚠️ No se encontraron datos con la columna 'CreationDate' en la pestaña BBW.")
+    st.error("No se encontraron datos válidos en la hoja de ventas.")
     st.stop()
 
 # ==========================================
-# 3. ENCABEZADO Y 2 FILTROS LIMPIOS
+# 5. ENCABEZADO Y FILTROS LIMPIOS (SIN EMOJIS)
 # ==========================================
-col_t, col_b = st.columns([4, 1])
+col_t, col_b = st.columns([5, 1])
 with col_t:
-    st.title(f"🫧 Seguimiento Operativo — {NOMBRE_MARCA}")
-    st.markdown(f"🕒 **Última actualización:** `{last_upd}`")
+    st.markdown(f"""
+        <div class="bbw-brand-tag">{NOMBRE_MARCA}</div>
+        <h1 class="bbw-title">Seguimiento Operativo y Capacidad de Procesamiento</h1>
+        <div class="bbw-meta">Última actualización de datos: <strong>{last_upd}</strong></div>
+    """, unsafe_allow_html=True)
+
 with col_b:
     st.write("")
-    if st.button("🔄 Actualizar Datos", use_container_width=True):
+    if st.button("Actualizar datos", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
 
-st.divider()
+st.markdown("<hr style='margin: 1rem 0 1.25rem 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
-f1, f2 = st.columns(2)
+f1, f2, f_espacio = st.columns([1.2, 1.2, 1.6])
 with f1:
     eventos_disp = df_slas["Evento"].dropna().unique().tolist()
-    evento_sel = st.selectbox("1️⃣ Seleccionar Evento 2026:", eventos_disp)
+    evento_sel = st.selectbox("Evento", eventos_disp)
 
 cfg_evt = df_slas[df_slas["Evento"] == evento_sel].copy()
 f_ini = pd.to_datetime(cfg_evt["Inicio"].iloc[0])
 f_fin = pd.to_datetime(cfg_evt["Fin"].iloc[0])
 
 # ==========================================
-# 4. PROCESAMIENTO Y NOMBRES EXACTOS DE COLUMNAS
+# 6. PROCESAMIENTO OPERATIVO
 # ==========================================
 d_v = df_vtex.copy()
 d_v["Fecha"] = pd.to_datetime(d_v["CreationDate"], errors="coerce").dt.normalize()
@@ -211,7 +437,7 @@ for col in ["Vtex Orders", "Vtex Sales", "ICG Orders", "Facturado ICG"]:
 slas_pais = cfg_evt[["País", "Promesa_Dias", "Comentario"]].drop_duplicates(subset=["País"])
 df_calc = pd.merge(df_calc, slas_pais, on="País", how="left")
 df_calc["PROMESA DE ENTREGA"] = pd.to_numeric(df_calc["Promesa_Dias"], errors="coerce").fillna(7).astype(int)
-df_calc["COMENTARIOS"] = df_calc["Comentario"].fillna("")
+df_calc["COMENTARIOS"] = df_calc["Comentario"].fillna("").astype(str).replace("nan", "")
 
 df_calc["AVANCE DE FACTURACIÓN"] = np.where(df_calc["Vtex Sales"] > 0, (df_calc["Facturado ICG"] / df_calc["Vtex Sales"]) * 100, 0.0)
 df_calc["PEDIDOS PENDIENTES"] = df_calc["Vtex Orders"] - df_calc["ICG Orders"]
@@ -220,17 +446,14 @@ df_calc["META MINIMA"] = np.ceil(df_calc["Vtex Orders"] / df_calc["PROMESA DE EN
 df_calc["DÍAS HOMBRES"] = np.where(df_calc["META MINIMA"] > 0, np.round(df_calc["PEDIDOS PENDIENTES"] / df_calc["META MINIMA"], 0), 0)
 
 with f2:
-    paises_opciones = ["🌎 Todos los Países (Overview)"] + sorted(df_calc["País"].astype(str).unique().tolist())
-    pais_sel = st.selectbox("2️⃣ Filtrar País:", paises_opciones)
+    paises_opciones = ["Todos los países"] + sorted(df_calc["País"].astype(str).unique().tolist())
+    pais_sel = st.selectbox("País", paises_opciones)
 
-df_vista = df_calc if "Todos" in pais_sel else df_calc[df_calc["País"] == pais_sel]
+df_vista = df_calc if pais_sel == "Todos los países" else df_calc[df_calc["País"] == pais_sel]
 
 # ==========================================
-# 5. TARJETAS RESUMEN Y TABLA PALETA BATH & BODY WORKS
+# 7. TARJETAS KPI CLEAN
 # ==========================================
-st.caption(f"📅 **Ventana del Evento:** `{f_ini.strftime('%Y-%m-%d')}` al `{f_fin.strftime('%Y-%m-%d')}`")
-
-k1, k2, k3, k4 = st.columns(4)
 tot_ord = df_vista["Vtex Orders"].sum()
 tot_icg_ord = df_vista["ICG Orders"].sum()
 tot_sales = df_vista["Vtex Sales"].sum()
@@ -238,101 +461,83 @@ tot_icg_sales = df_vista["Facturado ICG"].sum()
 tot_pend = df_vista["PEDIDOS PENDIENTES"].sum()
 tot_avance = (tot_icg_sales / tot_sales * 100) if tot_sales > 0 else 0.0
 
-k1.metric("Vtex Orders", f"{tot_ord:,.0f}")
-k2.metric("ICG Orders", f"{tot_icg_ord:,.0f}")
-k3.metric("Pedidos Pendientes", f"{tot_pend:,.0f}")
-k4.metric("Avance de Facturación", f"{tot_avance:.0f}%")
+st.markdown(f"""
+    <div style="font-size: 0.82rem; color: #64748B; margin-top: 0.25rem;">
+        Ventana del evento: <strong>{f_ini.strftime('%d/%m/%Y')}</strong> al <strong>{f_fin.strftime('%d/%m/%Y')}</strong>
+    </div>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Vtex Orders</div>
+            <div class="kpi-value">{tot_ord:,.0f}</div>
+            <div class="kpi-sub">Venta entrante: ${tot_sales:,.2f}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">ICG Orders</div>
+            <div class="kpi-value">{tot_icg_ord:,.0f}</div>
+            <div class="kpi-sub">Facturado: ${tot_icg_sales:,.2f}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Pedidos Pendientes</div>
+            <div class="kpi-value">{tot_pend:,.0f}</div>
+            <div class="kpi-sub">Por facturar en ERP</div>
+        </div>
+        <div class="kpi-card accent">
+            <div class="kpi-label">Avance de Facturación</div>
+            <div class="kpi-value">{tot_avance:.0f}%</div>
+            <div class="kpi-sub">Sobre venta total USD</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-cols_tabla = [
-    "País", "Vtex Orders", "Vtex Sales", "ICG Orders", "Facturado ICG",
-    "AVANCE DE FACTURACIÓN", "PEDIDOS PENDIENTES", "GAP",
-    "PROMESA DE ENTREGA", "META MINIMA", "DÍAS HOMBRES", "COMENTARIOS"
-]
+# ==========================================
+# 8. TABLA HTML CORPORATIVA (CLEAN Y SIN "NONE")
+# ==========================================
+st.markdown('<div class="section-header">Detalle de Capacidad Operativa por País</div>', unsafe_allow_html=True)
 
-df_mostrar = df_vista[cols_tabla].copy()
-if "Todos" in pais_sel and len(df_mostrar) > 1:
-    fila_total = pd.DataFrame([{
-        "País": "Total general",
-        "Vtex Orders": df_mostrar["Vtex Orders"].sum(),
-        "Vtex Sales": df_mostrar["Vtex Sales"].sum(),
-        "ICG Orders": df_mostrar["ICG Orders"].sum(),
-        "Facturado ICG": df_mostrar["Facturado ICG"].sum(),
-        "AVANCE DE FACTURACIÓN": (df_mostrar["Facturado ICG"].sum() / df_mostrar["Vtex Sales"].sum() * 100) if df_mostrar["Vtex Sales"].sum() > 0 else 0.0,
-        "PEDIDOS PENDIENTES": df_mostrar["PEDIDOS PENDIENTES"].sum(),
-        "GAP": df_mostrar["GAP"].sum(),
-        "PROMESA DE ENTREGA": np.nan,
-        "META MINIMA": np.nan,
-        "DÍAS HOMBRES": np.nan,
-        "COMENTARIOS": ""
-    }])
-    df_mostrar = pd.concat([df_mostrar, fila_total], ignore_index=True)
+filas_html = []
+for _, r in df_vista.iterrows():
+    pend_val = r["PEDIDOS PENDIENTES"]
+    if pend_val < 0:
+        pend_str = f"({abs(pend_val):,.0f})"
+        pend_cls = "pend-neg"
+    else:
+        pend_str = f"{pend_val:,.0f}"
+        pend_cls = "pend-pos"
 
-def fmt_pendientes(val):
-    if pd.isna(val):
-        return ""
-    return f"({abs(val):,.0f})" if val < 0 else f"{val:,.0f}"
+    filas_html.append(f"""
+        <tr>
+            <td class="col-pais">{r['País']}</td>
+            <td class="bg-vtex">{r['Vtex Orders']:,.0f}</td>
+            <td class="bg-vtex">${r['Vtex Sales']:,.2f}</td>
+            <td class="bg-icg">{r['ICG Orders']:,.0f}</td>
+            <td class="bg-icg">${r['Facturado ICG']:,.2f}</td>
+            <td class="bg-avance">{r['AVANCE DE FACTURACIÓN']:.0f}%</td>
+            <td class="{pend_cls}">{pend_str}</td>
+            <td>${r['GAP']:,.2f}</td>
+            <td>{r['PROMESA DE ENTREGA']:.0f}</td>
+            <td>{r['META MINIMA']:,.0f}</td>
+            <td>{r['DÍAS HOMBRES']:,.0f}</td>
+            <td class="col-comentarios">{r['COMENTARIOS']}</td>
+        </tr>
+    """)
 
-def fmt_ent_vacio(val):
-    return "" if pd.isna(val) else f"{val:,.0f}"
-
-def aplicar_estilos_bbw(df):
-    styler = df.style.format({
-        "Vtex Orders": "{:,.0f}",
-        "Vtex Sales": "${:,.2f}",
-        "ICG Orders": "{:,.0f}",
-        "Facturado ICG": "${:,.2f}",
-        "AVANCE DE FACTURACIÓN": "{:.0f}%",
-        "PEDIDOS PENDIENTES": fmt_pendientes,
-        "GAP": "${:,.2f}",
-        "PROMESA DE ENTREGA": fmt_ent_vacio,
-        "META MINIMA": fmt_ent_vacio,
-        "DÍAS HOMBRES": fmt_ent_vacio,
-    })
-
-    # Paleta Bath & Body Works:
-    # Bloque VTEX (Azul Gingham Suave)
-    styler = styler.set_properties(
-        subset=["Vtex Orders", "Vtex Sales"],
-        **{"background-color": "#EBF3FA", "color": "#1B365D", "font-weight": "600"}
-    )
-    # Bloque ICG (Celeste Gingham Medio)
-    styler = styler.set_properties(
-        subset=["ICG Orders", "Facturado ICG"],
-        **{"background-color": "#D4E6F6", "color": "#0F2942", "font-weight": "600"}
-    )
-    # Bloque Operativo (Blanco limpio + Rosa BBW suave en Avance)
-    styler = styler.set_properties(
-        subset=["AVANCE DE FACTURACIÓN"],
-        **{"background-color": "#FCE8EE", "color": "#9B1B48", "font-weight": "bold"}
-    )
-
-    def color_pendientes(val):
-        if isinstance(val, (int, float)):
-            if val < 0:
-                return "color: #C00000; font-weight: bold;"
-            elif val > 0:
-                return "color: #1B365D; font-weight: 600;"
-        return ""
-
-    styler = styler.map(color_pendientes, subset=["PEDIDOS PENDIENTES"])
-
-    def resaltar_total(row):
-        if row["País"] == "Total general":
-            return ["background-color: #1B365D; color: #FFFFFF; font-weight: bold;"] * len(row)
-        return [""] * len(row)
-
-    styler = styler.apply(resaltar_total, axis=1)
-    return styler
-
-st.subheader("📋 Cuadro de Seguimiento Operativo")
-alto_tabla = (len(df_mostrar) + 1) * 38 + 10
-st.dataframe(
-    aplicar_estilos_bbw(df_mostrar),
-    use_container_width=True,
-    hide_index=True,
-    height=alto_tabla,
-    column_config={
-        "País": st.column_config.TextColumn("País", width="small"),
-        "COMENTARIOS": st.column_config.TextColumn("COMENTARIOS", width="large"),
-    }
-)
+# Fila Total General cuando se muestran todos los países
+if pais_sel == "Todos los países" and len(df_vista) > 1:
+    tot_gap = df_vista["GAP"].sum()
+    tot_pend_str = f"({abs(tot_pend):,.0f})" if tot_pend < 0 else f"{tot_pend:,.0f}"
+    filas_html.append(f"""
+        <tr class="row-total">
+            <td style="text-align:left;">Total general</td>
+            <td>{tot_ord:,.0f}</td>
+            <td>${tot_sales:,.2f}</td>
+            <td>{tot_icg_ord:,.0f}</td>
+            <td>${tot_icg_sales:,.2f}</td>
+            <td>{tot_avance:.0f}%</td>
+            <td>{tot_pend_str}</td>
+            <td>${tot_gap:,.2f}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    """)
