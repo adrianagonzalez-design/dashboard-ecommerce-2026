@@ -18,6 +18,12 @@ def leer_hoja(nombre_hoja):
     df.columns = df.columns.astype(str).str.strip()
     return df
 
+def limpiar_numero(serie):
+    return pd.to_numeric(
+        serie.astype(str).str.replace(r"[\$,\s]", "", regex=True),
+        errors="coerce"
+    ).fillna(0.0)
+
 MAPA_PAISES = {
     "PANAMA": "PAN", "GUATEMALA": "GTM", "COLOMBIA": "COL", "PERU": "PER",
     "COSTA RICA": "CRI", "PARAGUAY": "PRY", "ECUADOR": "ECU",
@@ -126,7 +132,10 @@ def preparar_vtex(df):
     d["Fecha"] = pd.to_datetime(d["CreationDate"], errors="coerce").dt.normalize()
     if "StatusRawValue" in d.columns:
         d = d[~d["StatusRawValue"].astype(str).str.lower().isin(["canceled", "cancelled", "payment-pending"])]
-    d = d[(d["Fecha"] >= f_ini) & (d["Fecha"] <= f_fin)]
+    d = d[(d["Fecha"] >= f_ini) & (d["Fecha"] <= f_fin)].copy()
+    d["QuantitySKU"] = limpiar_numero(d["QuantitySKU"])
+    d["TOTAL SKU PRICE (Dollar)"] = limpiar_numero(d["TOTAL SKU PRICE (Dollar)"])
+    d["Country"] = d["Country"].astype(str).str.strip()
     return d.groupby("Country", as_index=False).agg(
         Orders=("Order", "nunique"),
         QTY=("QuantitySKU", "sum"),
@@ -139,8 +148,10 @@ def preparar_icg_bbw(df):
     d = df.copy()
     d["Fecha"] = pd.to_datetime(d["Fecha"], errors="coerce").dt.normalize()
     d = d[d["TIENDA"].astype(str).str.contains("E-COMMERCE", case=False, na=False)]
-    d = d[d["Fecha"] >= f_ini]
+    d = d[d["Fecha"] >= f_ini].copy()
     d["País"] = d["País"].astype(str).str.upper().str.strip().map(MAPA_PAISES).fillna(d["País"])
+    d["TRANSACCIONES"] = limpiar_numero(d["TRANSACCIONES"])
+    d["VENTAS_DTO"] = limpiar_numero(d["VENTAS_DTO"])
     return d.groupby("País", as_index=False).agg(
         Order_ICG=("TRANSACCIONES", "sum"),
         Sales_ICG=("VENTAS_DTO", "sum")
@@ -152,8 +163,10 @@ def preparar_icg_vsba(df):
     d = df.copy()
     d["Fecha"] = pd.to_datetime(d["DATE"], errors="coerce").dt.normalize()
     d = d[d["TYPE"].astype(str).str.upper() == "ECOMMERCE"]
-    d = d[d["Fecha"] >= f_ini]
+    d = d[d["Fecha"] >= f_ini].copy()
     d["País"] = d["COUNTRY"].astype(str).str.upper().str.strip().map(MAPA_PAISES).fillna(d["COUNTRY"])
+    d["TRANS"] = limpiar_numero(d["TRANS"])
+    d["NET USD"] = limpiar_numero(d["NET USD"])
     return d.groupby("País", as_index=False).agg(
         Order_ICG=("TRANS", "sum"),
         Sales_ICG=("NET USD", "sum")
@@ -169,23 +182,27 @@ else:
     vtex_res = pd.concat([preparar_vtex(df_bbw), preparar_vtex(df_vsba_vtex)]).groupby("País", as_index=False).sum()
     icg_res = pd.concat([preparar_icg_bbw(df_icg_bbw), preparar_icg_vsba(df_tv_tf)]).groupby("País", as_index=False).sum()
 
-df_calc = pd.merge(vtex_res, icg_res, on="País", how="outer").fillna(0)
+df_calc = pd.merge(vtex_res, icg_res, on="País", how="outer")
+for col_num in ["Orders", "QTY", "Sales_USD", "Order_ICG", "Sales_ICG"]:
+    df_calc[col_num] = pd.to_numeric(df_calc[col_num], errors="coerce").fillna(0.0)
+
 slas_pais = cfg_evt[["País", "Promesa_Dias", "Comentario"]].drop_duplicates(subset=["País"])
 df_calc = pd.merge(df_calc, slas_pais, on="País", how="left")
-df_calc["Promesa_Dias"] = pd.to_numeric(df_calc["Promesa_Dias"], errors="coerce").fillna(7)
+df_calc["Promesa_Dias"] = pd.to_numeric(df_calc["Promesa_Dias"], errors="coerce").fillna(7.0)
 df_calc["Comentario"] = df_calc["Comentario"].fillna("")
 
-df_calc["% Share"] = np.where(df_calc["Sales_USD"].sum() > 0, (df_calc["Sales_USD"] / df_calc["Sales_USD"].sum()) * 100, 0)
-df_calc["Avance Facturación %"] = np.where(df_calc["Sales_USD"] > 0, (df_calc["Sales_ICG"] / df_calc["Sales_USD"]) * 100, 0)
+total_sales_usd = float(df_calc["Sales_USD"].sum())
+df_calc["% Share"] = (df_calc["Sales_USD"] / total_sales_usd * 100) if total_sales_usd > 0 else 0.0
+df_calc["Avance Facturación %"] = np.where(df_calc["Sales_USD"] > 0, (df_calc["Sales_ICG"] / df_calc["Sales_USD"]) * 100, 0.0)
 df_calc["Pedidos Pendientes"] = df_calc["Orders"] - df_calc["Order_ICG"]
 df_calc["GAP ($)"] = df_calc["Sales_ICG"] - df_calc["Sales_USD"]
 df_calc["Meta Mínima Diaria"] = np.ceil(df_calc["Orders"] / df_calc["Promesa_Dias"])
 df_calc["Pedido Promedio Diario"] = df_calc["Order_ICG"] / dias_evento
-df_calc["Eficacia Operativa %"] = np.where(df_calc["Meta Mínima Diaria"] > 0, (df_calc["Pedido Promedio Diario"] / df_calc["Meta Mínima Diaria"]) * 100, 0)
-df_calc["Días Hombre"] = np.where(df_calc["Meta Mínima Diaria"] > 0, df_calc["Pedidos Pendientes"] / df_calc["Meta Mínima Diaria"], 0)
+df_calc["Eficacia Operativa %"] = np.where(df_calc["Meta Mínima Diaria"] > 0, (df_calc["Pedido Promedio Diario"] / df_calc["Meta Mínima Diaria"]) * 100, 0.0)
+df_calc["Días Hombre"] = np.where(df_calc["Meta Mínima Diaria"] > 0, df_calc["Pedidos Pendientes"] / df_calc["Meta Mínima Diaria"], 0.0)
 
 with f3:
-    paises_lista = ["🌎 OVERVIEW REGIONAL (Todos los Países)"] + sorted(df_calc["País"].unique().tolist())
+    paises_lista = ["🌎 OVERVIEW REGIONAL (Todos los Países)"] + sorted(df_calc["País"].astype(str).unique().tolist())
     pais_sel = st.selectbox("3️⃣ País:", paises_lista)
 
 df_vista = df_calc if "OVERVIEW" in pais_sel else df_calc[df_calc["País"] == pais_sel]
@@ -194,11 +211,13 @@ df_vista = df_calc if "OVERVIEW" in pais_sel else df_calc[df_calc["País"] == pa
 # 5. KPIS, GRÁFICOS Y TABLA OPERATIVA
 # ==========================================
 k1, k2, k3, k4, k5 = st.columns(5)
-tot_orders = df_vista["Orders"].sum()
-tot_icg = df_vista["Order_ICG"].sum()
-pend = df_vista["Pedidos Pendientes"].sum()
-avance_tot = (df_vista["Sales_ICG"].sum() / df_vista["Sales_USD"].sum() * 100) if df_vista["Sales_USD"].sum() > 0 else 0
-dias_h = df_vista["Días Hombre"].mean()
+tot_orders = float(df_vista["Orders"].sum())
+tot_icg = float(df_vista["Order_ICG"].sum())
+pend = float(df_vista["Pedidos Pendientes"].sum())
+tot_sales_v = float(df_vista["Sales_USD"].sum())
+tot_icg_v = float(df_vista["Sales_ICG"].sum())
+avance_tot = (tot_icg_v / tot_sales_v * 100) if tot_sales_v > 0 else 0.0
+dias_h = float(df_vista["Días Hombre"].mean()) if not df_vista.empty else 0.0
 
 k1.metric("Orders (Entrantes)", f"{tot_orders:,.0f}")
 k2.metric("Orders ICG (Facturadas)", f"{tot_icg:,.0f}")
