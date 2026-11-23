@@ -7,7 +7,7 @@ from datetime import datetime
 # 1. CONFIGURACIÓN DE LA MARCA Y GOOGLE SHEET
 # ==========================================
 NOMBRE_MARCA = "Bath & Body Works"  # Cambiar a "Victoria's Secret" en el otro dashboard
-SHEET_ID = "PEGA_AQUI_EL_ID_DE_TU_GOOGLE_SHEET"
+SHEET_ID = "1DlGk2a1Olk7hlOwntiKNOc3W9xlQDCKtz7khS7j0dX0"
 
 st.set_page_config(page_title=f"Seguimiento Operativo - {NOMBRE_MARCA}", page_icon="📊", layout="wide")
 
